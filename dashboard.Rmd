@@ -3,6 +3,7 @@ title: "Delivery Logger"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
+    vertical_layout: fill
 runtime: shiny
 ---
 
@@ -97,7 +98,7 @@ renderTable({
 })
 ```
 
-### Summary {.row}
+### Summary
 
 Column {data-width=50}
 
@@ -107,9 +108,8 @@ renderValueBox({
   total_tip <- ifelse(is.na(total_tip), 0, total_tip)
   valueBox(
     value = sprintf("$%.2f", total_tip),
-    caption = "All Time Tips",
-    icon = "fa-dollar-sign",
-    color = "green"
+    caption = "All Time Statistics",
+    color = "blue"
   )
 })
 ```
@@ -122,9 +122,16 @@ renderValueBox({
   total_miles <- ifelse(is.na(total_miles), 0, total_miles)
   valueBox(
     value = sprintf("%.2f mi", total_miles),
-    caption = "All Time Miles",
-    icon = "fa-road",
-    color = "blue"
   )
 })
 ```
+
+```{r}
+renderValueBox({
+  total_deliveries <- dbGetQuery(connection, "SELECT COUNT(*) AS count FROM deliveries")$count
+  total_deliveries <- ifelse(is.na(total_deliveries), 0, total_deliveries)
+  label <- ifelse(total_deliveries == 1, "delivery", "deliveries")
+  valueBox(
+    value = sprintf("%d %s", total_deliveries, label)
+  )
+})
