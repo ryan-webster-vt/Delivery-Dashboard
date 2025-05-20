@@ -24,9 +24,9 @@ dbExecute(connection, "
     delivery_time TEXT,  -- Format: 'HH:MM:SS'
     store_time TEXT,     -- Format: 'HH:MM:SS'
     total_miles REAL,
-    gender INTEGER,      -- 0 = Male, 1 = Female (or other encoding)
+    gender INTEGER,      -- 0 = Male, 1 = Female
     race TEXT,
-    sun INTEGER          -- 1 = Delivered on Sunday, 0 = Otherwise
+    sun INTEGER          -- 1 = Incliment Weather, 0 = Otherwise
   );
 ")
 

@@ -1,21 +1,90 @@
 ---
-title: "Untitled"
+title: "Delivery Logger"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
-    vertical_layout: fill
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(shiny)
+library(DBI)
+library(RSQLite)
+library(bslib)
+library(fontawesome)
+
+connection <- dbConnect(RSQLite::SQLite(), "database.db")
 ```
 
 ## Column {data-width="650"}
 
-### Chart A
+### Insert Delivery Data
 
 ```{r}
+fluidRow(
+  column(6, textInput("date", "Date", value = Sys.Date())),
+  column(6, textInput("delivery_time", "Delivery Time"))
+)
 
+fluidRow(
+  column(6, textInput("start_address", "Start Address", value = "STORE")),
+  column(6, textInput("delivery_address", "Delivery Address"))
+)
+
+fluidRow(
+  column(6, textInput("store_time", "Store Time", value = "12:00:00")),
+  column(6, numericInput("total_miles", "Total Miles", value = 0))
+)
+
+fluidRow(
+  column(6, numericInput("meal_amount", "Meal Amount", value = 0)),
+  column(6, numericInput("tip_amount", "Tip Amount", value = 0))
+)
+
+fluidRow(
+  column(6, selectInput("gender", "Gender", choices = c("Male" = 0, "Female" = 1))),
+  column(6, textInput("race", "Race"))
+)
+
+fluidRow(
+  column(6, checkboxInput("returned_to_store", "Returned to Store", value = TRUE)),
+  column(6, checkboxInput("sun", "Inclement Weather?", value = FALSE))
+)
+
+actionButton("submit", "Submit Delivery", width = "100%")
+```
+
+```{r}
+observeEvent(input$submit, {
+  query <- "
+    INSERT INTO deliveries (
+      date, start_address, delivery_address, returned_to_store,
+      meal_amount, tip_amount, delivery_time, store_time,
+      total_miles, gender, race, sun
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  "
+  
+  dbExecute(connection, query, params = list(
+    input$date,
+    input$start_address,
+    input$delivery_address,
+    as.integer(isTRUE(input$returned)),
+    input$meal_amount,
+    input$tip_amount,
+    input$delivery_time,
+    input$store_time,
+    input$total_miles,
+    as.integer(input$gender),
+    input$race,
+    as.integer(isTRUE(input$sun))
+  ))
+  
+  showModal(modalDialog(
+    title = "Success!",
+    "Delivery data inserted into the database.",
+  ))
+})
 ```
 
 ## Column {data-width="350"}
@@ -23,11 +92,39 @@ library(flexdashboard)
 ### Chart B
 
 ```{r}
-
+renderTable({
+  dbGetQuery(connection, "SELECT * FROM deliveries ORDER BY id DESC LIMIT 5")
+})
 ```
 
-### Chart C
+### Summary {.row}
 
-```{r}
+Column {data-width=50}
 
+```{r total-tip-box}
+renderValueBox({
+  total_tip <- dbGetQuery(connection, "SELECT SUM(tip_amount) AS total FROM deliveries")$total
+  total_tip <- ifelse(is.na(total_tip), 0, total_tip)
+  valueBox(
+    value = sprintf("$%.2f", total_tip),
+    caption = "All Time Tips",
+    icon = "fa-dollar-sign",
+    color = "green"
+  )
+})
+```
+
+Column {data-width=50}
+
+```{r total-miles-box}
+renderValueBox({
+  total_miles <- dbGetQuery(connection, "SELECT SUM(total_miles) AS total FROM deliveries")$total
+  total_miles <- ifelse(is.na(total_miles), 0, total_miles)
+  valueBox(
+    value = sprintf("%.2f mi", total_miles),
+    caption = "All Time Miles",
+    icon = "fa-road",
+    color = "blue"
+  )
+})
 ```
