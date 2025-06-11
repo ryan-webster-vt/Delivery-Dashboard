@@ -2,32 +2,40 @@
 # Libraries ---------------------------------------------------------------
 
 library(DBI)
-library(RSQLite)
+library(RMySQL)
 
 
 # Create DB ---------------------------------------------------------------
 
-connection <- dbConnect(RSQLite::SQLite(), "database.db")
+connection <- dbConnect(
+  RMySQL::MySQL(),
+  host = "localhost",
+  user = "root",
+  password = "password2357!"
+)
 
 
 # Create Deliveries Table -------------------------------------------------
 
+dbExecute(connection, "CREATE DATABASE IF NOT EXISTS deliveries")
+dbExecute(connection, "USE deliveries")
+
 dbExecute(connection, "
   CREATE TABLE IF NOT EXISTS deliveries (
-    id INTEGER PRIMARY KEY,
-    date TEXT,  -- Format: 'YYYY-MM-DD'
-    start_address TEXT,
-    delivery_address TEXT,
-    returned_to_store INTEGER,  -- 1 = Yes, 0 = No
-    meal_amount REAL,
-    tip_amount REAL,
-    delivery_time TEXT,  -- Format: 'HH:MM:SS'
-    store_time TEXT,     -- Format: 'HH:MM:SS'
-    total_miles REAL,
-    gender INTEGER,      -- 0 = Male, 1 = Female
-    race TEXT,
-    sun INTEGER          -- 1 = Incliment Weather, 0 = Otherwise
-  );
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATE,
+    delivery_time VARCHAR(10),
+    start_address VARCHAR(255),
+    delivery_address VARCHAR(255),
+    store_time VARCHAR(10),
+    total_miles DOUBLE,
+    meal_amount DOUBLE,
+    tip_amount DOUBLE,
+    gender TINYINT,
+    race VARCHAR(50),
+    returned_to_store BOOLEAN,
+    sun BOOLEAN
+  )
 ")
 
 

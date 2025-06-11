@@ -3,7 +3,10 @@
 library(shiny)
 library(shinydashboard)
 library(DBI)
-library(RSQLite)
+library(DT)
+library(glue)
+
+source("server.R")
 
 # UI ----------------------------------------------------------------------
 
@@ -12,9 +15,7 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Insert Delivery", tabName = "insert", icon = icon("plus")),
-      menuItem("Delete Delivery", tabName = "delete", icon = icon("trash")),
-      menuItem("Total Summary", tabName = "total_summary", icon = icon("chart-bar")),
-      menuItem("Delivery Statistics", tabName = "delivery_statistics", icon = icon("chart-bar"))
+      menuItem("All Deliveries", tabName = "all_deliveries")
     )
   ),
   dashboardBody(
@@ -53,35 +54,18 @@ ui <- dashboardPage(
       ),
       
       tabItem(
-        tabName = "delete",
-        h3("Delete functionality coming soon...")
-      ),
-      
-      tabItem(
-        tabName = "total_summary",
+        tabName = "all_deliveries",
         fluidRow(
-          box(title = "All-Time Summary", width = 4, solidHeader = TRUE,
-              valueBoxOutput("total_tip"),
-              valueBoxOutput("total_miles"),
-              valueBoxOutput("total_deliveries")
+          box(
+            title = "All Deliveries",
+            width = 12,                
+            solidHeader = TRUE,
+            status = "primary",     
+            DT::dataTableOutput("all_deliveries")
           )
         )
-      ),
-      
-      tabItem(
-        tabName = "delivery_statistics",
-        fluidRow(
-          box(title = "Delivery Statistics", width = 4, solidHeader = TRUE,
-              valueBoxOutput("avg_tip"),
-              valueBoxOutput("avg_miles"),
-              valueBoxOutput("tip_per_mile"),
-              valueBoxOutput("tip_per_minute"))
-        )
-      ),
-      
-      tabItem(
-        
       )
+      
     )
   )
 )
