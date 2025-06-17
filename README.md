@@ -10,4 +10,10 @@ look into which day of the week provides the best tips and will attempt to forec
 ```bash
 git clone https://github.com/ryan-webster-vt/Delivery-Dashboard/
 ```
-* 
+* Open db_init.R. Either replace the user and password fields in the connection or create your own .env file with your MySQL login credentials.
+* Execute the entire file, either by clicking Ctrl+A+Enter or Ctrl+Enter each line. With this, the deliveries table has been created.
+* You'll most likely have to install the necessary libraries to run the application. Run this code into your console:
+```R
+install.packages(c("shiny", "shinydashboard", "DBI", "DT", "glue", "RMySQL", "dotenv"))
+```
+* In the ui.R file, click "Run App" to launch the application.
