@@ -5,6 +5,8 @@ library(shinydashboard)
 library(DBI)
 library(DT)
 library(glue)
+library(RMySQL)
+library(dotenv)
 
 source("server.R")
 
@@ -25,28 +27,24 @@ ui <- dashboardPage(
         fluidRow(
           box(title = "Enter Delivery", width = 12, solidHeader = TRUE, status = "primary",
               fluidRow(
-                column(6, textInput("date", "Date", value = Sys.Date())),
-                column(6, textInput("delivery_time", "Delivery Time"))
+                column(4, textInput("date", "Date", value = Sys.Date())),
+                column(4, textInput("start_address", "Start Address", value = "STORE")),
+                column(4, textInput("delivery_address", "Delivery Address"))
               ),
               fluidRow(
-                column(6, textInput("start_address", "Start Address", value = "STORE")),
-                column(6, textInput("delivery_address", "Delivery Address"))
+                column(4, numericInput("delivery_time", "Delivery Time (Minutes)", value = 0)),
+                column(4, numericInput("total_miles", "Total Miles", value = 0)),
+                column(4, numericInput("hours_worked", "Hours Worked", value = 0))
               ),
               fluidRow(
-                column(6, textInput("store_time", "Store Time")),
-                column(6, numericInput("total_miles", "Total Miles", value = 0))
+                column(4, numericInput("meal_amount", "Meal Amount", value = 0)),
+                column(4, numericInput("tip_amount", "Tip Amount", value = 0)),
+                column(4, selectInput("gender", "Gender", choices = c("Male" = 0, "Female" = 1)))
               ),
               fluidRow(
-                column(6, numericInput("meal_amount", "Meal Amount", value = 0)),
-                column(6, numericInput("tip_amount", "Tip Amount", value = 0))
-              ),
-              fluidRow(
-                column(6, selectInput("gender", "Gender", choices = c("Male" = 0, "Female" = 1))),
-                column(6, textInput("race", "Race"))
-              ),
-              fluidRow(
-                column(6, checkboxInput("returned_to_store", "Returned to Store", value = TRUE)),
-                column(6, checkboxInput("sun", "Inclement Weather?", value = FALSE))
+                column(4, checkboxInput("cash", "Cash Order?", value = FALSE)),
+                column(4, checkboxInput("returned_to_store", "Returned to Store?", value = FALSE)),
+                column(4, checkboxInput("inclement_weather", "Inclement Weather?", value = FALSE))
               ),
               actionButton("submit", "Submit Delivery", class = "btn-primary")
           )

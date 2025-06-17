@@ -5,9 +5,9 @@ account: ryanwebster
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14877572
-bundleId: 10436197
+bundleId: 10441451
 url: https://ryanwebster.shinyapps.io/Delivery-Dashboard/
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: dashboard.html|dashboard.Rmd|database.sqlite|db_init.R
+ignoredFiles: db_init.R|delivery_dashboard.twb

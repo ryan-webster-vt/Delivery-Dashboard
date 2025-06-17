@@ -1,9 +1,11 @@
+load_dot_env()
+
 connection <- dbConnect(
   RMySQL::MySQL(),
   dbname = "deliveries",
   host = "localhost",
-  user = "root",
-  password = "password2357!"
+  user = Sys.getenv("DB_USER"),
+  password = Sys.getenv("DB_PASSWORD")
 )
 
 server <- function(input, output, session) {
@@ -17,8 +19,8 @@ server <- function(input, output, session) {
     query <- glue("
     INSERT INTO deliveries (
       date, start_address, delivery_address, returned_to_store,
-      meal_amount, tip_amount, delivery_time, store_time,
-      total_miles, gender, race, sun
+      meal_amount, tip_amount, delivery_time,
+      total_miles, gender, cash, contactless, inclement_weather, hours_worked
     ) VALUES (
       '{input$date}', 
       '{input$start_address}', 
@@ -26,12 +28,13 @@ server <- function(input, output, session) {
       {as.integer(input$returned_to_store)}, 
       {input$meal_amount}, 
       {input$tip_amount}, 
-      '{input$delivery_time}', 
-      '{input$store_time}', 
+      {input$delivery_time}, 
       {input$total_miles}, 
       {as.integer(input$gender)}, 
-      '{input$race}', 
-      {as.integer(input$sun)}
+      {as.integer(input$cash)}, 
+      {as.integer(input$contactless)}, 
+      {as.integer(input$inclement_weather)}, 
+      {input$hours_worked}
     )
   ")
     
